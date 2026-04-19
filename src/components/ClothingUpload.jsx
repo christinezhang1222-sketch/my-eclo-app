@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 
-const ClothingUpload = ({ isOpen, onClose, onSave, categories, editingClothing }) => {
+const ClothingUpload = ({ isOpen, onClose, onSave, categories, editingClothing, currentCategory }) => {
   const [image, setImage] = useState(null)
   const [name, setName] = useState('')
-  const [category, setCategory] = useState('tops')
+  const [category, setCategory] = useState(currentCategory || 'tops')
   const [subcategory, setSubcategory] = useState('T恤')
   const [season, setSeason] = useState('四季')
   const [thickness, setThickness] = useState('薄')
@@ -27,7 +27,7 @@ const ClothingUpload = ({ isOpen, onClose, onSave, categories, editingClothing }
       // 重置表单
       setImage(null)
       setName('')
-      setCategory('tops')
+      setCategory(currentCategory || 'tops')
       setSubcategory('T恤')
       setSeason('四季')
       setThickness('薄')
@@ -35,7 +35,18 @@ const ClothingUpload = ({ isOpen, onClose, onSave, categories, editingClothing }
       setPrice('')
       setFrequency('偶尔')
     }
-  }, [editingClothing])
+  }, [editingClothing, currentCategory])
+
+  // 当当前分类变化时，更新分类和子分类
+  useEffect(() => {
+    if (currentCategory && !editingClothing) {
+      setCategory(currentCategory)
+      const currentCat = categories.find(cat => cat.value === currentCategory)
+      if (currentCat?.subcategories?.length > 0) {
+        setSubcategory(currentCat.subcategories[0])
+      }
+    }
+  }, [currentCategory, categories, editingClothing])
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -138,24 +149,7 @@ const ClothingUpload = ({ isOpen, onClose, onSave, categories, editingClothing }
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="relative">
-              <label className="block text-sm font-medium text-dark mb-2">分类</label>
-              <select 
-                value={category} 
-                onChange={(e) => setCategory(e.target.value)} 
-                className="w-full px-3 py-2 border border-light rounded-md bg-accent text-dark pr-8 appearance-none"
-              >
-                {categories && categories.map((cat) => (
-                  <option key={cat.value} value={cat.value}>{cat.name}</option>
-                ))}
-              </select>
-              <div className="absolute right-3 top-10 pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
+          <div className="mb-4">
             <div className="relative">
               <label className="block text-sm font-medium text-dark mb-2">子分类</label>
               <select 

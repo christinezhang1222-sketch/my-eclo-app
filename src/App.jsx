@@ -19,6 +19,7 @@ function App() {
   const [isEditingSubcategories, setIsEditingSubcategories] = useState(false)
   const [customSubcategoryName, setCustomSubcategoryName] = useState('')
   const [editingClothing, setEditingClothing] = useState(null)
+  const [isCategorySelectOpen, setIsCategorySelectOpen] = useState(false)
   const [clothingItems, setClothingItems] = useState([
     {
       id: 1,
@@ -181,6 +182,15 @@ function App() {
 
   const handleEditClothing = (clothing) => {
     setEditingClothing(clothing)
+    setIsUploadOpen(true)
+  }
+
+  const handleAddClothingFromHome = (category) => {
+    setSelectedCategory(category)
+    if (category.subcategories.length > 0) {
+      setSelectedSubcategory(category.subcategories[0])
+    }
+    setIsCategorySelectOpen(false)
     setIsUploadOpen(true)
   }
 
@@ -386,7 +396,7 @@ function App() {
       {activeTab === 'closet' && (
         <button 
           className="fixed bottom-20 right-4 bg-primary text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg"
-          onClick={() => setIsUploadOpen(true)}
+          onClick={() => showCategoryHome ? setIsCategorySelectOpen(true) : setIsUploadOpen(true)}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -411,6 +421,7 @@ function App() {
         onSave={handleSaveClothing} 
         categories={categories}
         editingClothing={editingClothing}
+        currentCategory={selectedCategory.value}
       />
 
       {/* 创建穿搭弹窗 */}
@@ -427,6 +438,37 @@ function App() {
         onClose={() => setIsAddCustomCategoryOpen(false)} 
         onSave={handleSaveCustomCategory} 
       />
+
+      {/* 分类选择弹窗 */}
+      {isCategorySelectOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto mx-4">
+            <div className="p-4 border-b border-light flex justify-between items-center">
+              <h2 className="text-lg font-medium text-dark">选择分类</h2>
+              <button onClick={() => setIsCategorySelectOpen(false)} className="text-muted">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="space-y-2">
+                {categories.map((category) => (
+                  <div key={category.value} className="bg-light rounded-lg p-4 cursor-pointer flex justify-between items-center" onClick={() => handleAddClothingFromHome(category)}>
+                    <div>
+                      <h3 className="font-medium text-dark">{category.name}</h3>
+                      <p className="text-sm text-muted">{category.subcategories.length} 个子分类</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
