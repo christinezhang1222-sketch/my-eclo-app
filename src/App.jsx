@@ -388,7 +388,7 @@ function App() {
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* 新手引导 */}
-      {showGuide && clothingItems.length === 0 && (
+      {showGuide && (
         <Guide onComplete={() => setShowGuide(false)} onTabChange={setActiveTab} />
       )}
 
